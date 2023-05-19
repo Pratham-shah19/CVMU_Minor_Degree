@@ -1,0 +1,1 @@
+# CVMU_Minor_Degree
