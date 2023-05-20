@@ -1,50 +1,40 @@
-const express = require("express");
-const Owner = require("../models/Owner");
+const Admin = require("../models/Admin");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthenticatedError } = require("../errors/index");
-const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-// const stripe = require("stripe")(
-//   "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"
-// );
-
-const registerOwner = async (req, res) => {
+const registerAdmin = async (req, res) => {
   const { name, email, password} = req.body;
   if (!email || !name || !password ) {
     throw new BadRequestError("Please provide necessary credentials");
   }
-  const ownerx = await Owner.findOne({email:req.body.email})
-  if(ownerx){
+  const adminx = await Admin.findOne({email:req.body.email})
+  if(adminx){
     throw new BadRequestError("This Email already Exists");
   }
   if(req.body.password.length<6){
     throw new BadRequestError("Minimum size of password should be 6");
   }
-  // const customer = await stripe.customers.create({
-  //   email:email,name:name
-  // });
-  // req.body.customerId = customer.id;
-  const owner = await Owner.create(req.body);
-  const token = owner.createJWT();
+
+  const admin = await Admin.create(req.body);
+  const token = admin.createJWT();
   res
     .status(StatusCodes.CREATED)
-    .json({ user: { name: owner.name, id: owner._id }, token });
+    .json({ user: { name: admin.name, id: admin._id }, token });
 };
 
-const forgotPasswordOwner = async (req, res) => {
+const forgotPasswordAdmin = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     throw new BadRequestError("Please provide email");
   }
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
-  console.log(otp);
-  const owner = await Owner.findOneAndUpdate(
+  const admin = await Admin.findOneAndUpdate(
     { email: email },
     { mailotp: otp },
     { new: true, runValidators: true }
   );
-  if (!owner) {
+  if (!admin) {
     throw new BadRequestError("Please provide valid email");
   }
 
@@ -57,18 +47,18 @@ const forgotPasswordOwner = async (req, res) => {
       ciphers: "SSLv3",
     },
     auth: {
-      user: "hetpatel5542@gmail.com",
-      pass: "xivslyvrfcrgewtb",
+      user: "cvmuminordegree@gmail.com",
+      pass: "viekdygkymatxtlz",
     },
   });
 
   const mailOptions = {
-    from: '"Nivaas " <hetpatel5542@gmail.com>', // sender address (who sends)
+    from: '"CVMU Minor Degree " <cvmuminordegree@gmail.com>', // sender address (who sends)
     to: `${email}`, // list of receivers (who receives)
-    subject: "OTP for Reseting Your User App Password ", // Subject line
-    text: `Your OTP for reseting the password for Owner app is ${otp}, please enter this OTP in your User app to reset your password.
+    subject: "OTP for Resetting Your student App Password ", // Subject line
+    text: `Your OTP for resetting the password for student app is ${otp}, please enter this OTP in your student app to reset your password.
 -Thanks,
-Team Nivaas  `, // plaintext body
+CVMU  `, // plaintext body
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
@@ -79,28 +69,27 @@ Team Nivaas  `, // plaintext body
   });
 };
 
-const loginOwner = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
   if (!email || !password) {
     throw new BadRequestError("Please provide email and password");
   }
-  const owner = await Owner.findOne({ email });
-  if (!owner) {
+  const admin = await Admin.findOne({ email });
+  if (!admin) {
     throw new UnauthenticatedError("Invalid Credentials");
   }
-  const isPasswordCorrect = await owner.comparePassword(password);
+  const isPasswordCorrect = await admin.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError("Invalid Credentials");
   }
-  const token = owner.createJWT();
+  const token = admin.createJWT();
   res
     .status(StatusCodes.CREATED)
-    .json({ user: { name: owner.name, id: owner._id }, token });
+    .json({ user: { name: admin.name, id: admin._id }, token });
 };
 
 module.exports = {
-  registerOwner,
-  forgotPasswordOwner,
-  loginOwner,
+  registerAdmin,
+  forgotPasswordAdmin,
+  loginAdmin,
 };

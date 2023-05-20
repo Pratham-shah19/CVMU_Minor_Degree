@@ -30,25 +30,61 @@ const StudentSchema = new mongoose.Schema({
   mailotp: {
     type: Number,
     default: 0,
+  },
+  college:{
+    type:String,
+    required:[true,"please provide college name"],
+    default:"GCET"
+  },
+  department:{
+    type:String,
+    required:[true,"please provide department name"]
+
+  },
+  semester:{
+    type:Number,
+    required:[true,"provide semester"],
+    default:3,
+  },
+  cpi:{
+    type:mongoose.Decimal128,
+    required:[true,"provide cpi of the student"]
+  },
+  imgUrl:{
+    type:String
+  },
+  subject:{
+    type:String,
+  },
+  isRegistered:{
+    type:Boolean,
+    default:false
+  },
+  isChoiceFilled:{
+    type:Boolean,
+    default:false
+  },
+  choices:{
+    type:[String]
   }
   
 });
 
-UserSchema.pre("save", async function () {
+StudentSchema.pre("save", async function () {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.methods.createJWT = function () {
+StudentSchema.methods.createJWT = function () {
   return jwt.sign(
     { userId: this._id, name: this.name },
     process.env.JWT_SECRET_STUDENT,
     { expiresIn: process.env.JWT_LIFETIME }
   );
 };
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+StudentSchema.methods.comparePassword = async function (candidatePassword) {
+  const isMatch = bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };
 
-module.exports = mongoose.model("Student", UserSchema);
+module.exports = mongoose.model("Student", StudentSchema);

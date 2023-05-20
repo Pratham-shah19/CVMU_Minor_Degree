@@ -1,1 +1,2 @@
 # CVMU_Minor_Degree
+Initialized authentication server

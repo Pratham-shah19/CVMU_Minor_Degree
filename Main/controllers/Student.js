@@ -47,13 +47,13 @@ const forgotPasswordStudent = async (req, res) => {
       ciphers: "SSLv3",
     },
     auth: {
-      user: "hetpatel5542@gmail.com",
-      pass: "xivslyvrfcrgewtb",
+      user: "cvmuminordegree@gmail.com",
+      pass: "viekdygkymatxtlz",
     },
   });
 
   const mailOptions = {
-    from: '"CVMU Minor Degree " <hetpatel5542@gmail.com>', // sender address (who sends)
+    from: '"CVMU Minor Degree " <cvmuminordegree@gmail.com>', // sender address (who sends)
     to: `${email}`, // list of receivers (who receives)
     subject: "OTP for Resetting Your student App Password ", // Subject line
     text: `Your OTP for resetting the password for student app is ${otp}, please enter this OTP in your student app to reset your password.
