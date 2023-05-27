@@ -2,6 +2,7 @@ const Student = require("../models/Student");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthenticatedError } = require("../errors/index");
 const nodemailer = require("nodemailer");
+const bcrypt = require('bcryptjs')
 
 
 const registerStudent = async (req, res) => {
@@ -16,7 +17,7 @@ const registerStudent = async (req, res) => {
   if (password.length < 8) {
     throw new BadRequestError("Minimum size of password should be 8");
   }
-
+  req.body.isRegistered = true;
   const student = await Student.create(req.body);
   const token = student.createJWT();
   res
@@ -89,8 +90,43 @@ const loginStudent = async (req, res) => {
 };
 
 
+const validateMailOtp = async (req, res) => {
+  let { otp } = req.body;
+  const { email } = req.params;
+  if (!otp) {
+    throw new BadRequestError("Please provide otp in the body");
+  } else {
+    otp = Number(otp);
+    const student = await Student.findOne({ email: email });
+    if (student.mailotp !== otp) {
+      res.status(StatusCodes.OK).json({ res: "failed", data: "Invalid otp" });
+    } else {
+      res.status(StatusCodes.OK).json({ res: "success", data: "valid otp" });
+    }
+  }
+};
+
+const updateStudentPassword = async (req, res) => {
+  const { email } = req.params;
+  var { password } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  password = await bcrypt.hash(password, salt);
+  const student = await Student.findOneAndUpdate(
+    { email: email },
+    { password },
+    { new: true, runValidators: true, setDefaultsOnInsert: true }
+  );
+  if (!student) {
+    throw new NotFoundError("student not found");
+  } else {
+    res.status(StatusCodes.OK).json({ res: "success", data: student });
+  }
+};
+
 module.exports = {
   registerStudent,
   forgotPasswordStudent,
   loginStudent,
+  validateMailOtp,
+  updateStudentPassword
 };
