@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const {loginUser,registerUser,forgotPasswordUser} = require('../controllers/Student')
-
-router.route('/login').post(loginUser)
-router.route('/register').post(registerUser)
-router.route('/forgotpassword').patch(forgotPasswordUser)
+const {loginStudent,registerStudent,forgotPasswordStudent} = require('../controllers/Student')
+//authentication
+router.route('/login').post(loginStudent)
+router.route('/register').post(registerStudent)
+router.route('/forgotpassword').patch(forgotPasswordStudent)
 
 module.exports = router

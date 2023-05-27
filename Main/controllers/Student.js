@@ -5,15 +5,15 @@ const nodemailer = require("nodemailer");
 
 
 const registerStudent = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!email || !name || !password) {
+  const { name, email,enrolment, password,phoneno,college,department,semester,cpi } = req.body;
+  if (!email || !name || !password ||!phoneno || !college || !department || !semester || !cpi || !enrolment) {
     throw new BadRequestError("Please provide necessary credentials");
   }
-  const studentx = await Student.findOne({ email: req.body.email });
+  const studentx = await Student.findOne({ email});
   if (studentx) {
     throw new BadRequestError("This Email already Exists");
   }
-  if (req.body.password.length < 8) {
+  if (password.length < 8) {
     throw new BadRequestError("Minimum size of password should be 8");
   }
 

@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-const {loginOwner,forgotPasswordOwner,registerOwner} = require('../controllers/Admin')
+const {loginAdmin,forgotPasswordAdmin,registerAdmin} = require('../controllers/Admin')
 
-router.route('/login').post(loginOwner)
-router.route('/register').post(registerOwner)
-router.route('/forgotpassword').patch(forgotPasswordOwner)
+router.route('/login').post(loginAdmin)
+router.route('/register').post(registerAdmin)
+router.route('/forgotpassword').patch(forgotPasswordAdmin)
 
 
 module.exports = router

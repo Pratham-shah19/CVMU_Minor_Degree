@@ -24,7 +24,7 @@ const adminRouter = require("./routes/adminRouter")
 const studentRouter = require("./routes/studentRouter")
 
 //routes 
-app.use("/api/v1/user",studentRouter);
+app.use("/api/v1/student",studentRouter);
 app.use("/api/v1/admin",adminRouter)
 
 // error handler

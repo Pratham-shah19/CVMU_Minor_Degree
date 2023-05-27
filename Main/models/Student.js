@@ -1,12 +1,18 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { string } = require("joi");
 require("dotenv").config();
 
 const StudentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide name"],
+  },
+  enrolment:{
+    type:String,
+    required:[true,"please provide enrolment number"],
+    unique:true
   },
   email: {
     type: String,
@@ -34,7 +40,8 @@ const StudentSchema = new mongoose.Schema({
   college:{
     type:String,
     required:[true,"please provide college name"],
-    default:"GCET"
+    default:"GCET",
+    enum:["GCET","ADIT","MBIT"]
   },
   department:{
     type:String,
