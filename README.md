@@ -1,4 +1,6 @@
 # CVMU_Minor_Degree
+api endpoints:
+api/v1/student/ : 1.login 2.register 3.forgotpassword 4.otp/validate/email 5.password/email
 User app flow: 
 1.register 
 2.login 
