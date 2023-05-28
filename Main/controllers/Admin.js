@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const bcrypt = require('bcryptjs');
 const Subject = require("../models/Subject");
 const Faculty = require("../models/Faculty");
+const Student = require("../models/Student");
 
 const registerAdmin = async (req, res) => {
   const { name, email, password,college, phoneno} = req.body;
@@ -126,8 +127,8 @@ const updateAdminPassword = async (req, res) => {
 };
 
 const getSubjects = async(req,res)=>{
-  const {id} = req.user;
-  const college_admin = await Admin.findOne({_id:id});
+  const {userId} = req.user;
+  const college_admin = await Admin.findOne({_id:userId});
   if(!college_admin){
     throw new BadRequestError("this admin id doesn't exists")
   }
@@ -137,10 +138,10 @@ const getSubjects = async(req,res)=>{
 
 }
 const createSubject = async(req,res)=>{
-  const {id} = req.user;
+  const {userId} = req.user;
   const {name,faculty,department,seats} = req.body;
 
-  const college_admin = await Admin.findOne({_id:id});
+  const college_admin = await Admin.findOne({_id:userId});
   if(!college_admin){
     throw new BadRequestError("this admin id doesn't exists")
   }
@@ -156,14 +157,41 @@ const createSubject = async(req,res)=>{
 
 }
 const publishResult = async(req,res)=>{
-  const {id} = req.user;
+  const {userId} = req.user;
+  var flag = false;
+  const college_admin = await Admin.findOne({_id:userId});
+  if(!college_admin){
+    throw new BadRequestError("this admin id doesn't exists")
+  }
+  const college = college_admin.college;
+
+  const students = await Student.find({college}).sort({cpi:-1});
+  for(let i=0;i<students.length;i++){
+    const choices = students[i].choices;
+    for(let sub in choices){
+      const subject = await Subject.findOne({name:sub});
+      if(subject.currentSeats>0){
+        const update_student = await Student.findOneAndUpdate({_id:students[i]._id},{subject:subject.name},{new:true});
+        const update_subject = await Subject.findOneAndUpdate({name:subject.name},{currentSeats:subject.currentSeats-1},{new:true});
+        flag = true;
+        break;
+      }
+    }
+  }
+
+  //reset the current seats back to original seats
+  const subjects = await Subject.find({});
+  for(let i=0;i<subjects.length;i++){
+    const update_subject = await Subject.findOneAndUpdate({_id:subjects[i]._id},{currentSeats:subjects[i].seats});
+  }
+  res.status(StatusCodes.OK).json({res:"success",data:"Result published"})
 
 }
 const registerFaculty = async(req,res)=>{
-  const {id} = req.user;
+  const {userId} = req.user;
   const {name,email,password,department,subject} = req.body;
 
-  const college_admin = await Admin.findOne({_id:id});
+  const college_admin = await Admin.findOne({_id:userId});
   if(!college_admin){
     throw new BadRequestError("this admin id doesn't exists");
   }
