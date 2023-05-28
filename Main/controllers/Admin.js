@@ -4,15 +4,15 @@ const { BadRequestError, UnauthenticatedError } = require("../errors/index");
 const nodemailer = require("nodemailer");
 
 const registerAdmin = async (req, res) => {
-  const { name, email, password} = req.body;
-  if (!email || !name || !password ) {
+  const { name, email, password,college, phoneno} = req.body;
+  if (!email || !name || !password ||!college ||!phoneno) {
     throw new BadRequestError("Please provide necessary credentials");
   }
-  const adminx = await Admin.findOne({email:req.body.email})
+  const adminx = await Admin.findOne({email})
   if(adminx){
     throw new BadRequestError("This Email already Exists");
   }
-  if(req.body.password.length<6){
+  if(password.length<6){
     throw new BadRequestError("Minimum size of password should be 6");
   }
 
