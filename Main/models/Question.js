@@ -7,6 +7,7 @@ const QuestionSchema = new mongoose.Schema({
   },
   imgUrl: {
     type: String,
+    default:""
   },
   marks: {
     type: Number,
@@ -21,7 +22,7 @@ const QuestionSchema = new mongoose.Schema({
     required: [true, "please provide options"],
   },
   correctOption: {
-    type: Number, //index of the correct option
+    type: [Number], //index of the correct option
     required: [true, "please provide the correct option"],
   },
 });

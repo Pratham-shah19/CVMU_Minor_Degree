@@ -9,7 +9,7 @@ const {
   updateStudentPassword,
   choiceFill
 } = require("../controllers/Student");
-const { authMiddleware } = require("../middleware/authentication_user");
+const  authMiddleware  = require("../middleware/authentication_user");
 //authentication
 router.route("/login").post(loginStudent);
 router.route("/register").post(registerStudent);
@@ -18,6 +18,6 @@ router.route("/forgotpassword").patch(forgotPasswordStudent);
 router.route("/password/:email").patch(updateStudentPassword);
 
 //choice filling
-router.route("/choicefilling").post(choiceFill);
+router.route("/choicefilling").post(authMiddleware,choiceFill);//req.body = {[subject_name1,subject_name2....]}
 
 module.exports = router;

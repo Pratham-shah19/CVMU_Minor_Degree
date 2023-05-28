@@ -16,7 +16,15 @@ const connectDB = require("./db/connect");
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 app.use(helmet());
-app.use(cors());
+app.use((
+  cors({
+    origin: "*",
+  })
+));
+app.use(function(req,res,next) {
+  res.header("Access-Control-Allow-Origin","*");
+  next();
+});
 app.use(xss());
 
 // routers

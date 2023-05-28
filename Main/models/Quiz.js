@@ -28,10 +28,12 @@ const QuizSchema = new mongoose.Schema({
   },
   questions:{
     type:[mongoose.Types.ObjectId],
-    required:[true,'please provide questions'],
     ref:"Quiz"
   }
 
+},
+{
+  timestamps:true
 });
 
 

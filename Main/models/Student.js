@@ -73,6 +73,11 @@ const StudentSchema = new mongoose.Schema({
   },
   choices:{
     type:[String]
+  },
+  attendedQuizzes:{
+    type:[mongoose.Types.ObjectId],
+    ref:"Quiz",
+    default:[]
   }
   
 });
