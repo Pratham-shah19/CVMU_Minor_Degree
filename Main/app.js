@@ -14,28 +14,28 @@ const connectDB = require("./db/connect");
 
 //middleware
 app.use(express.static(`${__dirname}/public`));
-app.use(express.json());
-app.use(helmet());
-app.use((
+
+app.use(
   cors({
     origin: "*",
   })
-));
-app.use(function(req,res,next) {
-  res.header("Access-Control-Allow-Origin","*");
+);
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
   next();
 });
-app.use(xss());
+
+app.use(express.json());
 
 // routers
-const adminRouter = require("./routes/adminRouter")
-const studentRouter = require("./routes/studentRouter")
-const facultyRouter = require("./routes/facultyRouter")
+const adminRouter = require("./routes/adminRouter");
+const studentRouter = require("./routes/studentRouter");
+const facultyRouter = require("./routes/facultyRouter");
 
-//routes 
-app.use("/api/v1/student",studentRouter);
-app.use("/api/v1/admin",adminRouter);
-app.use("/api/v1/faculty",facultyRouter);
+//routes
+app.use("/api/v1/student", studentRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/faculty", facultyRouter);
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");

@@ -105,11 +105,32 @@ const updateFacultyPassword = async (req, res) => {
   }
 };
 
+const getAllQuizzes = async(req,res)=>{
+  const {subject,sem} = req.params;
+  res.send('hh')
+
+}
+const getQuiz = async(req,res)=>{
+  res.send('hh')
+
+}
+const createQuiz = async(req,res)=>{
+
+  res.send('hh')
+}
+const createQuestion = async(req,res)=>{
+  res.send('hh')
+
+}
 
 module.exports = {
   forgotPasswordFaculty,
   loginFaculty,
   updateFacultyPassword,
   validateMailOtp,
+  getAllQuizzes,
+  createQuiz,
+  getQuiz,
+  createQuestion
 
 };
