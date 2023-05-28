@@ -22,10 +22,12 @@ app.use(xss());
 // routers
 const adminRouter = require("./routes/adminRouter")
 const studentRouter = require("./routes/studentRouter")
+const facultyRouter = require("./routes/facultyRouter")
 
 //routes 
 app.use("/api/v1/student",studentRouter);
-app.use("/api/v1/admin",adminRouter)
+app.use("/api/v1/admin",adminRouter);
+app.use("/api/v1/faculty",facultyRouter);
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");

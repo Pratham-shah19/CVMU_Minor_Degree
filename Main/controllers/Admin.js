@@ -2,7 +2,9 @@ const Admin = require("../models/Admin");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthenticatedError } = require("../errors/index");
 const nodemailer = require("nodemailer");
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const Subject = require("../models/Subject");
+const Faculty = require("../models/Faculty");
 
 const registerAdmin = async (req, res) => {
   const { name, email, password,college, phoneno} = req.body;
@@ -123,10 +125,73 @@ const updateAdminPassword = async (req, res) => {
   }
 };
 
+const getSubjects = async(req,res)=>{
+  const {id} = req.user;
+  const college_admin = await Admin.findOne({_id:id});
+  if(!college_admin){
+    throw new BadRequestError("this admin id doesn't exists")
+  }
+  const college = college_admin.college;
+  const subjects = await Subject.find({college});
+  res.status(StatusCodes.OK).json({res:"success",data:subjects})
+
+}
+const createSubject = async(req,res)=>{
+  const {id} = req.user;
+  const {name,faculty,department,seats} = req.body;
+
+  const college_admin = await Admin.findOne({_id:id});
+  if(!college_admin){
+    throw new BadRequestError("this admin id doesn't exists")
+  }
+  const college = college_admin.college;
+
+  if(!name || !faculty ||!department ||!seats){
+    throw new BadRequestError("Provide all the necessary subject details")
+  }
+  req.body.college = college;
+  req.body.currentSeats = seats;
+  const subject = await Subject.create(req.body);
+  res.status(StatusCodes.CREATED).json({res:"success",data:subject})
+
+}
+const publishResult = async(req,res)=>{
+  const {id} = req.user;
+
+}
+const registerFaculty = async(req,res)=>{
+  const {id} = req.user;
+  const {name,email,password,department,subject} = req.body;
+
+  const college_admin = await Admin.findOne({_id:id});
+  if(!college_admin){
+    throw new BadRequestError("this admin id doesn't exists");
+  }
+  const college = college_admin.college;
+
+  if(!name||!email||!password||!department||!subject){
+    throw new BadRequestError("Provide the necessary faculty details");
+  }
+  const facultyx = await Faculty.findOne({email})
+  if(facultyx){
+    throw new BadRequestError("This Email already Exists");
+  }
+  if(password.length<6){
+    throw new BadRequestError("Minimum size of password should be 6");
+  }
+  req.body.college = college;
+  const faculty = await Faculty.create(req.body);
+  res.status(StatusCodes.CREATED).json({res:"success",data:faculty});
+}
+
 module.exports = {
   registerAdmin,
   forgotPasswordAdmin,
   loginAdmin,
   updateAdminPassword,
-  validateMailOtp
+  validateMailOtp,
+  getSubjects,
+  createSubject,
+  publishResult,
+  registerFaculty
 };
