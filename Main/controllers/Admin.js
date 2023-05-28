@@ -2,6 +2,7 @@ const Admin = require("../models/Admin");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthenticatedError } = require("../errors/index");
 const nodemailer = require("nodemailer");
+const bcrypt = require('bcryptjs')
 
 const registerAdmin = async (req, res) => {
   const { name, email, password,college, phoneno} = req.body;
@@ -55,8 +56,8 @@ const forgotPasswordAdmin = async (req, res) => {
   const mailOptions = {
     from: '"CVMU Minor Degree " <cvmuminordegree@gmail.com>', // sender address (who sends)
     to: `${email}`, // list of receivers (who receives)
-    subject: "OTP for Resetting Your student App Password ", // Subject line
-    text: `Your OTP for resetting the password for student app is ${otp}, please enter this OTP in your student app to reset your password.
+    subject: "OTP for Resetting Your Admin Password ", // Subject line
+    text: `Your OTP for resetting the password for Admin portal is ${otp}, please enter this OTP in your Admin portal to reset your password.
 -Thanks,
 CVMU  `, // plaintext body
   };
@@ -88,8 +89,44 @@ const loginAdmin = async (req, res) => {
     .json({ user: { name: admin.name, id: admin._id }, token });
 };
 
+
+const validateMailOtp = async (req, res) => {
+  let { otp } = req.body;
+  const { email } = req.params;
+  if (!otp) {
+    throw new BadRequestError("Please provide otp in the body");
+  } else {
+    otp = Number(otp);
+    const admin = await Admin.findOne({ email: email });
+    if (admin.mailotp !== otp) {
+      res.status(StatusCodes.OK).json({ res: "failed", data: "Invalid otp" });
+    } else {
+      res.status(StatusCodes.OK).json({ res: "success", data: "valid otp" });
+    }
+  }
+};
+
+const updateAdminPassword = async (req, res) => {
+  const { email } = req.params;
+  var { password } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  password = await bcrypt.hash(password, salt);
+  const admin = await Admin.findOneAndUpdate(
+    { email: email },
+    { password },
+    { new: true, runValidators: true, setDefaultsOnInsert: true }
+  );
+  if (!admin) {
+    throw new NotFoundError("student not found");
+  } else {
+    res.status(StatusCodes.OK).json({ res: "success", data: admin });
+  }
+};
+
 module.exports = {
   registerAdmin,
   forgotPasswordAdmin,
   loginAdmin,
+  updateAdminPassword,
+  validateMailOtp
 };
