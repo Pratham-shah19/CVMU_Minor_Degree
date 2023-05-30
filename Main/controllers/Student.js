@@ -193,6 +193,15 @@ CVMU  `, // plaintext body
     res.status(StatusCodes.OK).json({ otpsent: true });
   });
 }
+const getStudentDetails = async(req,res)=>{
+  const {userId} = req.user;
+  const student = await Student.findOne({_id:userId});
+  if(!student){
+    throw new BadRequestError("NO students exists with this id");
+  }
+  res.status(StatusCodes.OK).json({res:"success",data:student});
+}
+
 
 module.exports = {
   registerStudent,
@@ -202,5 +211,6 @@ module.exports = {
   updateStudentPassword,
   choiceFill,
   validateMailOtp,
-  sendMailOtp
+  sendMailOtp,
+  getStudentDetails,
 };

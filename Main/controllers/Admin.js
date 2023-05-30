@@ -176,7 +176,7 @@ const publishResult = async(req,res)=>{
   for(let i=0;i<students.length;i++){
     const choices = students[i].choices;
     for(let sub in choices){
-      const subject = await Subject.findOne({name:sub});
+      const subject = await Subject.findOne({name:choices[sub]});
       if(subject.currentSeats>0){
         const update_student = await Student.findOneAndUpdate({_id:students[i]._id},{subject:subject.name},{new:true});
         const update_subject = await Subject.findOneAndUpdate({name:subject.name},{currentSeats:subject.currentSeats-1},{new:true});

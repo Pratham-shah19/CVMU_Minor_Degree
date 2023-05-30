@@ -9,7 +9,8 @@ const {
   updateStudentPassword,
   choiceFill,
   validateMailOtp,
-  sendMailOtp
+  sendMailOtp,
+  getStudentDetails,
 } = require("../controllers/Student");
 const  authMiddleware  = require("../middleware/authentication_user");
 //authentication
@@ -23,5 +24,8 @@ router.route("/password/:email").patch(updateStudentPassword);
 
 //choice filling
 router.route("/choicefilling").post(authMiddleware,choiceFill);//req.body = {[subject_name1,subject_name2....]}
+
+//profile
+router.route("/details").get(authMiddleware,getStudentDetails);
 
 module.exports = router;

@@ -28,7 +28,8 @@ const QuizSchema = new mongoose.Schema({
   },
   questions:{
     type:[mongoose.Types.ObjectId],
-    ref:"Quiz"
+    ref:"Quiz",
+    default:[]
   }
 
 },

@@ -146,8 +146,17 @@ const getQuiz = async(req,res)=>{
 
 }
 const createQuiz = async(req,res)=>{
-
-  res.send('hh')
+  const {userId} = req.user;
+  const faculty = await Faculty.findOne({_id:userId});
+  const {duration,name,semester} = req.body;
+  if(!duration || !name ||!semester){
+    throw new BadRequestError("please provide duration and name")
+  }
+  req.body.college = faculty.college;
+  req.body.department = faculty.department;
+  req.body.subject = faculty.subject;
+  const quiz = await Quiz.create(req.body);
+  res.status(StatusCodes.CREATED).json({res:"success",data:quiz});
 }
 const createQuestion = async(req,res)=>{
   res.send('hh')
