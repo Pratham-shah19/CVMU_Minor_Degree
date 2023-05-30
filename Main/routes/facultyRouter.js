@@ -11,7 +11,7 @@ const {
  createQuiz,
  createQuestion
 } = require("../controllers/Faculty");
-const authMiddleware = require("../middleware/authentication_user");
+const authMiddleware = require("../middleware/authentication_faculty");
 
 //authentication
 router.route("/login").post(loginFaculty);
