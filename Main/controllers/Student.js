@@ -125,11 +125,11 @@ const updateStudentPassword = async (req, res) => {
 
 const choiceFill = async(req,res)=>{
   const {choices} = req.body;
-  const {id} = req.user;
+  const {userId} = req.user;
   if(!choices){
     throw new BadRequestError("please provide choices");
   }
-  const student = await Student.findOneAndUpdate({_id:id},{choices},{new:true});
+  const student = await Student.findOneAndUpdate({_id:userId},{choices:choices},{new:true});
   res.status(StatusCodes.OK).json({res:"success",data:student});
 
 
