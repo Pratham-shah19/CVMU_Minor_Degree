@@ -33,7 +33,7 @@ const forgotPasswordStudent = async (req, res) => {
   const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
   const student = await Student.findOneAndUpdate(
     { email: email },
-    { mailotp: otp },
+    { otp: otp },
     { new: true, runValidators: true }
   );
   if (!student) {
@@ -90,7 +90,7 @@ const loginStudent = async (req, res) => {
 };
 
 
-const validateMailOtp = async (req, res) => {
+const validateOtp = async (req, res) => {
   let { otp } = req.body;
   const { email } = req.params;
   if (!otp) {
@@ -98,7 +98,7 @@ const validateMailOtp = async (req, res) => {
   } else {
     otp = Number(otp);
     const student = await Student.findOne({ email: email });
-    if (student.mailotp !== otp) {
+    if (student.otp !== otp) {
       res.status(StatusCodes.OK).json({ res: "failed", data: "Invalid otp" });
     } else {
       res.status(StatusCodes.OK).json({ res: "success", data: "valid otp" });
@@ -134,12 +134,73 @@ const choiceFill = async(req,res)=>{
 
 
 }
+const validateMailOtp = async(req,res)=>{
+  let { otp } = req.body;
+  const { email } = req.params;
+  if (!otp) {
+    throw new BadRequestError("Please provide otp in the body");
+  } else {
+    otp = Number(otp);
+    const student = await Student.findOne({ email: email });
+    if (student.mailotp !== otp) {
+      res.status(StatusCodes.OK).json({ res: "failed", data: "Invalid otp" });
+    } else {
+      res.status(StatusCodes.OK).json({ res: "success", data: "valid otp" });
+    }
+  }
+}
+const sendMailOtp = async(req,res)=>{
+  const { email } = req.body;
+  if (!email) {
+    throw new BadRequestError("Please provide email");
+  }
+  const otp = Math.floor(Math.random() * (10000 - 1000 + 1) + 1000);
+  const student = await Student.findOneAndUpdate(
+    { email: email },
+    { mailotp: otp },
+    { new: true, runValidators: true }
+  );
+  if (!student) {
+    throw new BadRequestError("Please provide valid email");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // hostname
+    secureConnection: false, // TLS requires secureConnection to be false
+    port: 587, // port for secure SMTP
+    tls: {
+      ciphers: "SSLv3",
+    },
+    auth: {
+      user: "cvmuminordegree@gmail.com",
+      pass: "viekdygkymatxtlz",
+    },
+  });
+
+  const mailOptions = {
+    from: '"CVMU Minor Degree " <cvmuminordegree@gmail.com>', // sender address (who sends)
+    to: `${email}`, // list of receivers (who receives)
+    subject: "Email Verification", // Subject line
+    text: `Your OTP for email verfication for student app is ${otp}, please enter this OTP in your student app to verify your email.
+-Thanks,
+CVMU  `, // plaintext body
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+
+    res.status(StatusCodes.OK).json({ otpsent: true });
+  });
+}
 
 module.exports = {
   registerStudent,
   forgotPasswordStudent,
   loginStudent,
-  validateMailOtp,
+  validateOtp,
   updateStudentPassword,
-  choiceFill
+  choiceFill,
+  validateMailOtp,
+  sendMailOtp
 };

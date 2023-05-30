@@ -5,6 +5,8 @@ const nodemailer = require("nodemailer");
 const bcrypt = require('bcryptjs');
 const Subject = require("../models/Subject");
 const Faculty = require("../models/Faculty");
+const Quiz = require("../models/Quiz");
+const Question = require("../models/Question");
 
 const forgotPasswordFaculty = async (req, res) => {
   const { email } = req.body;
@@ -107,11 +109,40 @@ const updateFacultyPassword = async (req, res) => {
 
 const getAllQuizzes = async(req,res)=>{
   const {subject,sem} = req.params;
-  res.send('hh')
+  var query_object= {};
+  if(subject){
+    query_object.subject = subject;
+  }
+  if(sem){
+    query_object.semester = sem;
+  }
+  var quiz = await Quiz.find(query_object);
+  
+  for(let i =0;i<quiz.length;i++){
+    let question_array = [];
+    for(let j=0;j<quiz[i].questions.length;j++){
+      const question = await Question({_id:quiz[i].questions[j]});
+      question_array.push(question);
+    }
+    quiz[i].questions = question_array;
+  }
+
+  res.status(StatusCodes.OK).json({res:"success",data:quiz})
 
 }
 const getQuiz = async(req,res)=>{
-  res.send('hh')
+  const {id} = req.params;
+  var quiz = await Quiz.findOne({_id:id});
+  if(!quiz){
+    throw new BadRequestError("Quiz does not exists with this id");
+  }
+  let question_array = [];
+  for(let j=0;j<quiz.questions.length;j++){
+    const question = await Question({_id:quiz.questions[j]});
+    question_array.push(question);
+  }
+  quiz.questions = question_array;
+  res.status(StatusCodes.OK).json({res:"success",data:quiz});
 
 }
 const createQuiz = async(req,res)=>{

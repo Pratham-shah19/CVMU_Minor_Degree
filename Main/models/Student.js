@@ -33,6 +33,10 @@ const StudentSchema = new mongoose.Schema({
     required: [true, "Please provide phone number"],
     default:"9999999999"
   },
+  otp:{
+    type: Number,
+    default: 0,
+  },
   mailotp: {
     type: Number,
     default: 0,

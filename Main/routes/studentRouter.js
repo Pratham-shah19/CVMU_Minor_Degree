@@ -5,15 +5,19 @@ const {
   loginStudent,
   registerStudent,
   forgotPasswordStudent,
-  validateMailOtp,
+  validateOtp,
   updateStudentPassword,
-  choiceFill
+  choiceFill,
+  validateMailOtp,
+  sendMailOtp
 } = require("../controllers/Student");
 const  authMiddleware  = require("../middleware/authentication_user");
 //authentication
 router.route("/login").post(loginStudent);
 router.route("/register").post(registerStudent);
-router.route("/otp/validate/:email").post(validateMailOtp);
+router.route("/otp/validate/:email").post(validateOtp);
+router.route("/mailotp/validate/:email").post(validateMailOtp);//validate mail otp
+router.route("/otp/mail").post(sendMailOtp);//sends otp to mail for verfication
 router.route("/forgotpassword").patch(forgotPasswordStudent);
 router.route("/password/:email").patch(updateStudentPassword);
 

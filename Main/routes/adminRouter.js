@@ -12,7 +12,7 @@ const {
   publishResult,
   registerFaculty
 } = require("../controllers/Admin");
-const authMiddleware = require("../middleware/authentication_user");
+const authMiddleware = require("../middleware/authentication_admin");
 
 //authentication
 router.route("/login").post(loginAdmin);
@@ -25,10 +25,10 @@ router.route("/password/:email").patch(updateAdminPassword);
 router.route('/faculty').post(authMiddleware,registerFaculty);
 
 //subjects
-router.route("/subject").get(authMiddleware, getSubjects);
-router.route("/subject").post(authMiddleware, createSubject);
+router.route("/subject").get(authMiddleware, getSubjects);// [?department=IT]so this will return subjects available to IT students
+router.route("/subject").post(authMiddleware, createSubject);// [req.body = {name,department,faculty,seats}]
 
 //choice filling results
-router.route("/result").get(authMiddleware, publishResult);
+router.route("/result").get(authMiddleware, publishResult);// once called all the current seats will get reset
 
 module.exports = router;

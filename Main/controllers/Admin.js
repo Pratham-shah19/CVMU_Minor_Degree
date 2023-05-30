@@ -128,12 +128,19 @@ const updateAdminPassword = async (req, res) => {
 
 const getSubjects = async(req,res)=>{
   const {userId} = req.user;
+  const {department} = req.params;
   const college_admin = await Admin.findOne({_id:userId});
   if(!college_admin){
     throw new BadRequestError("this admin id doesn't exists")
   }
   const college = college_admin.college;
-  const subjects = await Subject.find({college});
+  if(department){
+    var subjects = await Subject.find({college,department:{$ne:department}});
+  }
+  else{
+    var subjects = await Subject.find({college});
+
+  }
   res.status(StatusCodes.OK).json({res:"success",data:subjects})
 
 }

@@ -5,6 +5,7 @@ const SubjectSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide name"],
+    unique:true
   },
   faculty:{
     type:String,
