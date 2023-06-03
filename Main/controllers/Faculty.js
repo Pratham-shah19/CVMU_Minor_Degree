@@ -59,7 +59,7 @@ const loginFaculty = async (req, res) => {
   if (!email || !password) {
     throw new BadRequestError("Please provide email and password");
   }
-  const faculty = await faculty.findOne({ email });
+  const faculty = await Faculty.findOne({ email });
   if (!faculty) {
     throw new UnauthenticatedError("Invalid Credentials");
   }
@@ -126,7 +126,6 @@ const getAllQuizzes = async(req,res)=>{
     }
     quiz[i].questions = question_array;
   }
-
   res.status(StatusCodes.OK).json({res:"success",data:quiz})
 
 }
@@ -159,9 +158,16 @@ const createQuiz = async(req,res)=>{
   res.status(StatusCodes.CREATED).json({res:"success",data:quiz});
 }
 const createQuestion = async(req,res)=>{
-  const {userId} = req.user;
-  res.send("hello");
-
+  const {quizId,question,marks,options,correctOption} = req.body;
+  if(!quizId||!question||!marks ||!options ||!correctOption){
+    throw new BadRequestError("Please provide all the details");
+  }
+  var quiz = await Quiz.findOne({_id:quizId});
+  const ques = await Question.create(req.body);
+  let question_array  = quiz.questions;
+  question_array.push(ques._id);
+  const update_quiz = await Quiz.findOneAndUpdate({_id:quizId},{questions:question_array},{new:true});
+  res.status(StatusCodes.OK).json({res:"success",data:update_quiz});
 }
 
 module.exports = {
