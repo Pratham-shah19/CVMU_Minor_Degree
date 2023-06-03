@@ -159,7 +159,8 @@ const createQuiz = async(req,res)=>{
   res.status(StatusCodes.CREATED).json({res:"success",data:quiz});
 }
 const createQuestion = async(req,res)=>{
-  res.send('hh')
+  const {userId} = req.user;
+  res.send("hello");
 
 }
 
