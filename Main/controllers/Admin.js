@@ -127,26 +127,15 @@ const updateAdminPassword = async (req, res) => {
 };
 
 const getSubjects = async(req,res)=>{
-  const {userId} = req.user;
-  const {department} = req.params;
-  const college_admin = await Admin.findOne({_id:userId});
-  if(!college_admin){
-    throw new BadRequestError("this admin id doesn't exists")
-  }
-  const college = college_admin.college;
-  if(department){
-    var subjects = await Subject.find({college,department:{$ne:department}});
-  }
-  else{
-    var subjects = await Subject.find({college});
-
-  }
-  res.status(StatusCodes.OK).json({res:"success",data:subjects})
-
+  const {userId}  = req.user;
+  const admin = await Admin.findOne({_id:userId});
+  const subjects = await Subject({college:admin.college});
+  res.status(StatusCodes.OK).json({res:"success",data:subjects}) 
 }
+
 const createSubject = async(req,res)=>{
   const {userId} = req.user;
-  const {name,faculty,department,seats} = req.body;
+  const {name,department,seats} = req.body;
 
   const college_admin = await Admin.findOne({_id:userId});
   if(!college_admin){
@@ -154,7 +143,7 @@ const createSubject = async(req,res)=>{
   }
   const college = college_admin.college;
 
-  if(!name || !faculty ||!department ||!seats){
+  if(!name ||!department ||!seats){
     throw new BadRequestError("Provide all the necessary subject details")
   }
   req.body.college = college;
@@ -225,8 +214,8 @@ module.exports = {
   loginAdmin,
   updateAdminPassword,
   validateMailOtp,
-  getSubjects,
   createSubject,
   publishResult,
-  registerFaculty
+  registerFaculty,
+  getSubjects
 };

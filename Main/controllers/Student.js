@@ -2,7 +2,11 @@ const Student = require("../models/Student");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthenticatedError } = require("../errors/index");
 const nodemailer = require("nodemailer");
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const Subject = require("../models/Subject");
+const Course = require("../models/Course");
+const Question = require("../models/Question");
+const Quiz = require("../models/Quiz");
 
 
 const registerStudent = async (req, res) => {
@@ -123,13 +127,24 @@ const updateStudentPassword = async (req, res) => {
   }
 };
 
+const getSubjects = async(req,res)=>{
+  const {userId} = req.user;
+  const college_student = await Student.findOne({_id:userId});
+  if(!college_student){
+    throw new BadRequestError("this student id doesn't exists")
+  }
+  const college = college_student.college;
+  const subjects = await Subject.find({college,department:{$ne:college_student.department}});
+  res.status(StatusCodes.OK).json({res:"success",data:subjects})
+
+}
 const choiceFill = async(req,res)=>{
   const {choices} = req.body;
   const {userId} = req.user;
   if(!choices){
     throw new BadRequestError("please provide choices");
   }
-  const student = await Student.findOneAndUpdate({_id:userId},{choices:choices},{new:true});
+  const student = await Student.findOneAndUpdate({_id:userId},{choices:choices,isChoiceFilled:true},{new:true});
   res.status(StatusCodes.OK).json({res:"success",data:student});
 
 
@@ -195,11 +210,60 @@ CVMU  `, // plaintext body
 }
 const getStudentDetails = async(req,res)=>{
   const {userId} = req.user;
-  const student = await Student.findOne({_id:userId});
+  var student = await Student.findOne({_id:userId});
   if(!student){
     throw new BadRequestError("NO students exists with this id");
   }
+  const subject = await Subject.findOne({college:student.college,subject:student.subject});
+  for(let i=0;i<subject.courses.length;i++){
+    if(subject.courses[i].semester == student.semester)
+    {
+      var course  = await Course.findOne({_id:subject.course[i].courseId});
+      break;
+    }
+  }
+  student.course = course;
   res.status(StatusCodes.OK).json({res:"success",data:student});
+}
+const getAllQuizzes = async(req,res)=>{
+  const {userId} = req.user;
+  const student = await Student.findOne({_id:userId});
+  var quiz = await Quiz.find({subject:student.subject,college:student.college,semester:student.semester});
+  let result = [];
+  for(let i =0;i<quiz.length;i++){
+    let question_array = [];
+    let obj = {};
+    obj.name = quiz[i].name;
+    obj.duration = quiz[i].duration;
+    obj.totalMarks = quiz[i].totalMarks;
+    for(let j=0;j<quiz[i].questions.length;j++){
+      const question = await Question.findOne({_id:quiz[i].questions[j]});
+      question_array.push(question);
+    }
+    obj.questions = question_array;
+    result.push(obj);
+  }
+  res.status(StatusCodes.OK).json({res:"success",data:result})
+
+}
+const getQuiz = async(req,res)=>{
+  const {id} = req.params;
+  var quiz = await Quiz.findOne({_id:id});
+  if(!quiz){
+    throw new BadRequestError("Quiz does not exists with this id");
+  }
+  let obj = {};
+  obj.name = quiz.name;
+  obj.duration = quiz.duration;
+  obj.totalMarks = quiz.totalMarks;
+  let question_array = [];
+  for (let j = 0; j < quiz.questions.length; j++) {
+    const question = await Question({ _id: quiz.questions[j] });
+    question_array.push(question);
+  }
+  obj.questions = question_array;
+  res.status(StatusCodes.OK).json({ res: "success", data: obj });
+
 }
 
 
@@ -213,4 +277,7 @@ module.exports = {
   validateMailOtp,
   sendMailOtp,
   getStudentDetails,
+  getQuiz,
+  getAllQuizzes,
+  getSubjects
 };

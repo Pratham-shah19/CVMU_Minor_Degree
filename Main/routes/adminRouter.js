@@ -7,10 +7,10 @@ const {
   registerAdmin,
   validateMailOtp,
   updateAdminPassword,
-  getSubjects,
   createSubject,
   publishResult,
-  registerFaculty
+  registerFaculty,
+  getSubjects
 } = require("../controllers/Admin");
 const authMiddleware = require("../middleware/authentication_admin");
 
@@ -25,7 +25,7 @@ router.route("/password/:email").patch(updateAdminPassword);
 router.route('/faculty').post(authMiddleware,registerFaculty);
 
 //subjects
-router.route("/subject").get(authMiddleware, getSubjects);// [?department=IT]so this will return subjects available to IT students
+router.route("/subject").get(authMiddleware,getSubjects);
 router.route("/subject").post(authMiddleware, createSubject);// [req.body = {name,department,faculty,seats}]
 
 //choice filling results

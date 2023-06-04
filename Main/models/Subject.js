@@ -7,10 +7,10 @@ const SubjectSchema = new mongoose.Schema({
     required: [true, "Please provide name"],
     unique:true
   },
-  faculty:{
-    type:String,
-    required:[true,"please provide faculty's name"]
-  },
+  courses:{
+    type:[Object],//{semester:,courseId:}
+  }
+  ,
   college:{
     type:String,
     required:[true,"please provide college name"],

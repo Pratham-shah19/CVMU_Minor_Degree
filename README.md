@@ -11,3 +11,6 @@ User app flow:
 webapp flow:
 1.login : 3 accounts will be created by us for each college
 2.dashboard: 
+
+
+add subject -> add faculties -> add courses

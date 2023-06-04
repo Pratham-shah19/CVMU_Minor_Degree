@@ -1,4 +1,3 @@
-const { number } = require("joi");
 const mongoose = require("mongoose");
 
 
@@ -20,7 +19,6 @@ const QuizSchema = new mongoose.Schema({
   subject:{
     type:String,
     required:[true,'please provide subject name']
-
   },
   duration:{
     type:Number,
@@ -30,7 +28,16 @@ const QuizSchema = new mongoose.Schema({
     type:[mongoose.Types.ObjectId],
     ref:"Quiz",
     default:[]
-  }
+  },
+  totalMarks:{
+    type:Number,
+    default:0
+  },
+  facultyId:{
+    type:mongoose.Types.ObjectId,
+    ref:"Faculty"
+  },
+
 
 },
 {
