@@ -27,7 +27,6 @@ router.route("/password/:email").patch(updateStudentPassword);
 //subjects for choice filling
 router.route("/subject").get(authMiddleware, getSubjects);//this will return subjects that are available to particular departments
 
-
 //choice filling
 router.route("/choicefilling").post(authMiddleware,choiceFill);//req.body = {[subject_name1,subject_name2....]}
 

@@ -21,7 +21,7 @@ const registerStudent = async (req, res) => {
   if (password.length < 8) {
     throw new BadRequestError("Minimum size of password should be 8");
   }
-  req.body.isRegistered = true;
+  req.body.isRegistered = false;
   const student = await Student.create(req.body);
   const token = student.createJWT();
   res
@@ -236,8 +236,16 @@ const getAllQuizzes = async(req,res)=>{
     obj.duration = quiz[i].duration;
     obj.totalMarks = quiz[i].totalMarks;
     for(let j=0;j<quiz[i].questions.length;j++){
-      const question = await Question.findOne({_id:quiz[i].questions[j]});
-      question_array.push(question);
+      let question = await Question.findOne({_id:quiz[i].questions[j]});
+      let question_object = {}
+      question_object.question = question.question;
+      question_object.options = question.options;
+      question_object.correctOption = question.correctOption;
+      question_object._id = question._id;
+      question_object.quizId = question.quizId;
+      question_object.marks = question.marks;
+      question_object.studentChoice = "";
+      question_array.push(question_object);
     }
     obj.questions = question_array;
     result.push(obj);

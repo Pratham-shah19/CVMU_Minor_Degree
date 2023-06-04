@@ -162,7 +162,7 @@ const publishResult = async(req,res)=>{
   }
   const college = college_admin.college;
 
-  const students = await Student.find({college}).sort({cpi:-1});
+  const students = await Student.find({college,subject:{$exists:false}}).sort({cpi:-1});
   for(let i=0;i<students.length;i++){
     const choices = students[i].choices;
     for(let sub in choices){
@@ -241,6 +241,39 @@ const createCourse = async(req,res)=>{
 
 }
 
+const registerStudent = async(req,res)=>{
+  const {students} = req.body;
+  if(!students){
+    throw new BadRequestError("please provide the students array");
+  }
+  for(let i=0;i<students.length;i++)
+  {
+    const update_student = await Student.findOneAndUpdate({_id:students[i]},{isRegistered:true});
+  } 
+  res.status(StatusCodes.OK).json({res:"success"})
+}
+
+const getStudents = async(req,res)=>{
+  const {userId} = req.user;
+  const admin = await Admin.findOne({_id:userId});
+  var students_registered = await Student.find({college:admin.college,isRegistered:true});
+  var students_unregistered = await Student.find({college:admin.college,isRegistered:false});
+  var groupby = function (xs, key) {
+    return xs.reduce(function (rv, x) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  };
+  var registered = groupby(students_registered,"subject");
+  res.status(StatusCodes.OK).json({res:"success",data:{registered,unregistered:students_unregistered}});
+}
+
+const getAdminDetails = async(req,res)=>{
+  const {userId} = req.user;
+  const admin = await Admin.findOne({_id:userId});
+  res.status(StatusCodes.OK).json({res:"success",data:admin});
+}
+
 module.exports = {
   registerAdmin,
   forgotPasswordAdmin,
@@ -252,5 +285,8 @@ module.exports = {
   registerFaculty,
   getSubjects,
   getCourses,
-  createCourse
+  createCourse,
+  getStudents,
+  registerStudent,
+  getAdminDetails
 };
