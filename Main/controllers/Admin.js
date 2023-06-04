@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const Subject = require("../models/Subject");
 const Faculty = require("../models/Faculty");
 const Student = require("../models/Student");
+const Course = require("../models/Course");
 
 const registerAdmin = async (req, res) => {
   const { name, email, password,college, phoneno} = req.body;
@@ -129,7 +130,7 @@ const updateAdminPassword = async (req, res) => {
 const getSubjects = async(req,res)=>{
   const {userId}  = req.user;
   const admin = await Admin.findOne({_id:userId});
-  const subjects = await Subject({college:admin.college});
+  const subjects = await Subject.find({college:admin.college});
   res.status(StatusCodes.OK).json({res:"success",data:subjects}) 
 }
 
@@ -208,6 +209,38 @@ const registerFaculty = async(req,res)=>{
   res.status(StatusCodes.CREATED).json({res:"success",data:faculty});
 }
 
+const getCourses = async(req,res)=>{
+  const {subjectId} = req.params;
+  const subject = await Subject.findOne({_id:subjectId});
+  let courses_array = [];
+  for(let i=0;i<subject.courses.length;i++){
+    let obj = {};
+    obj.semester = subject.courses[i].semester;
+    const course = await Course.findOne({_id:subject.courses[i].courseId});
+    obj.course = course;
+    courses_array.push(obj);
+  } 
+  res.status(StatusCodes.OK).json({res:"success",data:courses_array});
+}
+
+const createCourse = async(req,res)=>{
+  const {subjectId} = req.params;
+  const {faculty,name} = req.body;
+  if(!faculty||!name){
+    throw new BadRequestError("please provide both faculty name and name of the course");
+  }
+  const subject = await Subject.findOne({_id:subjectId});
+  let courses = subject.courses;
+  req.body.subject = subject.name;
+  const course = await Course.create(req.body);
+  let obj = {semester:courses.length+3,courseId:course._id};
+  courses.push(obj);
+  const update_subject = await Subject.findOneAndUpdate({_id:subjectId},{courses},{new:true});
+
+  res.status(StatusCodes.OK).json({res:"success",data:update_subject})
+
+}
+
 module.exports = {
   registerAdmin,
   forgotPasswordAdmin,
@@ -217,5 +250,7 @@ module.exports = {
   createSubject,
   publishResult,
   registerFaculty,
-  getSubjects
+  getSubjects,
+  getCourses,
+  createCourse
 };

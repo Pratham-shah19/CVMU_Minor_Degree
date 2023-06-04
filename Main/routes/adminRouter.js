@@ -10,7 +10,9 @@ const {
   createSubject,
   publishResult,
   registerFaculty,
-  getSubjects
+  getSubjects,
+  getCourses,
+  createCourse
 } = require("../controllers/Admin");
 const authMiddleware = require("../middleware/authentication_admin");
 
@@ -27,6 +29,10 @@ router.route('/faculty').post(authMiddleware,registerFaculty);
 //subjects
 router.route("/subject").get(authMiddleware,getSubjects);
 router.route("/subject").post(authMiddleware, createSubject);// [req.body = {name,department,faculty,seats}]
+
+//courses
+router.route("/:subjectId/course").get(authMiddleware,getCourses);
+router.route("/:subjectId/course").post(authMiddleware,createCourse);
 
 //choice filling results
 router.route("/result").get(authMiddleware, publishResult);// once called all the current seats will get reset

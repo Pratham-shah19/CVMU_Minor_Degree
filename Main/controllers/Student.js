@@ -214,16 +214,15 @@ const getStudentDetails = async(req,res)=>{
   if(!student){
     throw new BadRequestError("NO students exists with this id");
   }
-  const subject = await Subject.findOne({college:student.college,subject:student.subject});
+  const subject = await Subject.findOne({college:student.college,name:student.subject});
   for(let i=0;i<subject.courses.length;i++){
     if(subject.courses[i].semester == student.semester)
     {
-      var course  = await Course.findOne({_id:subject.course[i].courseId});
+      var course  = await Course.findOne({_id:subject.courses[i].courseId});
       break;
     }
   }
-  student.course = course;
-  res.status(StatusCodes.OK).json({res:"success",data:student});
+  res.status(StatusCodes.OK).json({res:"success",data:student,course});
 }
 const getAllQuizzes = async(req,res)=>{
   const {userId} = req.user;
