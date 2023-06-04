@@ -12,7 +12,11 @@ const {
   getSubjects,
   sendMailOtp,
   getStudentDetails,
-  getAllQuizzes
+  getAllQuizzes,
+  getResources,
+  submitQuiz,
+  getAttendedQuizzes,
+  updateDetails
 } = require("../controllers/Student");
 const  authMiddleware  = require("../middleware/authentication_user");
 //authentication
@@ -31,9 +35,15 @@ router.route("/subject").get(authMiddleware, getSubjects);//this will return sub
 router.route("/choicefilling").post(authMiddleware,choiceFill);//req.body = {[subject_name1,subject_name2....]}
 
 //profile
-router.route("/details").get(authMiddleware,getStudentDetails);
+router.route("/details").get(authMiddleware,getStudentDetails);//students details
+router.route("/details").patch(authMiddleware,updateDetails);
 
 //quiz
-router.route("/quiz").get(authMiddleware,getAllQuizzes);
+router.route("/quiz").get(authMiddleware,getAllQuizzes);//only those quizzes that are not expired
+router.route("/quiz/attended").get(authMiddleware,getAttendedQuizzes);//only those quizzes that are attended by the student
+router.route("/quiz/submit").post(authMiddleware,submitQuiz);//req.body = {questions:[array]}
+
+//material,result,announcements
+router.route("/notifications").get(authMiddleware,getResources);//?type=Announcement,Result,Material
 
 module.exports = router;

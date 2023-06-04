@@ -37,6 +37,10 @@ const QuizSchema = new mongoose.Schema({
     type:mongoose.Types.ObjectId,
     ref:"Faculty"
   },
+  isExpired:{
+    type:Boolean,
+    default:false
+  }
 
 
 },

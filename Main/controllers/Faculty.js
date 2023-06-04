@@ -176,6 +176,26 @@ const createQuestion = async (req, res) => {
   );
   res.status(StatusCodes.OK).json({ res: "success", data: update_quiz });
 };
+const updateQuiz = async(req,res)=>{
+  const {quizId,isExpired} = req.body;
+  const update_quiz = await Quiz.findOneAndUpdate({_id:quizId},{isExpired},{new:true}); 
+  res.status(StatusCodes.OK).json({res:"success",data:update_quiz});
+}
+
+const deleteQuestion = async(req,res)=>{
+  const {questionId} = req.body;
+  const delete_question = await Question.findOneAndDelete({_id:questionId});
+  const quiz = await Quiz.findOne({_id:delete_question.quizId});
+  let questions = quiz.questions;
+  for(let i=0;i<questions.length;i++)
+  {
+    if(questions[i] == questionId){
+      questions.pop(i);
+    }
+  }
+  const update_quiz = await Quiz.findOneAndUpdate({_id:delete_question.quizId},{questions},{new:true});
+  res.status(StatusCodes.OK).json({res:"success",data:update_quiz});
+}
 
 module.exports = {
   forgotPasswordFaculty,
@@ -186,4 +206,6 @@ module.exports = {
   createQuiz,
   getQuiz,
   createQuestion,
+  updateQuiz,
+  deleteQuestion
 };

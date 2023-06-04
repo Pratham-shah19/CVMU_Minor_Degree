@@ -7,6 +7,8 @@ const Subject = require("../models/Subject");
 const Course = require("../models/Course");
 const Question = require("../models/Question");
 const Quiz = require("../models/Quiz");
+const quizResult = require("../models/quizResult");
+const Resource = require("../models/Resource");
 
 
 const registerStudent = async (req, res) => {
@@ -227,7 +229,7 @@ const getStudentDetails = async(req,res)=>{
 const getAllQuizzes = async(req,res)=>{
   const {userId} = req.user;
   const student = await Student.findOne({_id:userId});
-  var quiz = await Quiz.find({subject:student.subject,college:student.college,semester:student.semester});
+  var quiz = await Quiz.find({subject:student.subject,college:student.college,semester:student.semester,isExpired:false});
   let result = [];
   for(let i =0;i<quiz.length;i++){
     let question_array = [];
@@ -272,6 +274,63 @@ const getQuiz = async(req,res)=>{
   res.status(StatusCodes.OK).json({ res: "success", data: obj });
 
 }
+const submitQuiz = async(req,res)=>{
+  const {questions} = req.body;
+  const {userId} = req.user;
+  var result_object = {}
+  var marks = 0;
+  var response_array = [];
+  for(let i =0;i<questions.length;i++)
+  {
+    const obj = {}
+    obj.questionId = questions[i]._id;
+    obj.response= Number(questions[i].studentResponse);
+    if(questions[i].correctOption[0] == obj.response){
+      marks += questions[i].marks;
+    }
+    response_array.push(obj);
+    result_object.quizId = questions[i].quizId;
+
+  }
+  result_object.studentResponse = response_array;
+  result_object.studentId = userId;
+  result_object.marksObtained = marks;
+  const quizresult = await quizResult.create(result_object);
+  res.status(StatusCodes.OK).json({res:"success",data:quizresult})
+}
+
+const getResources = async(req,res)=>{
+  const {userId} = req.user;
+  const student = await Student.findOne({_id:userId});
+  const {type} = req.params;
+  const notifications = await Resource.find({college:student.college,subject:student.subject,semester:student.semester,type}).select(["name","link"]);
+  res.status(StatusCodes.OK).json({res:"success",data:notifications})
+}
+
+const getAttendedQuizzes = async(req,res)=>{
+  const {userId} = req.user;
+  const quiz = await quizResult.find({studentId:userId});
+  let quiz_array = [];
+  for(let i =0;i<quiz.length;i++)
+  {
+    const obj = {};
+    const temp_quiz = await Quiz.findOne({_id:quiz[i].quizId});
+    obj.quiz = temp_quiz;
+    obj.marksObtained = quiz[i].marksObtained;
+    obj.studentResponse = quiz[i].studentResponse;
+    quiz_array.push(obj);
+  }
+  res.status(StatusCodes.OK).json({res:"success",data:quiz_array});
+}
+const updateDetails = async(req,res)=>{
+  const {userId} = req.user;
+  const update_student = await Student.findOneAndUpdate({_id:userId},req.body,{new:true,runValidators:true});
+  if(!update){
+    throw new BadRequestError("please provide all the correct details");
+  }
+  res.status(StatusCodes.OK).json({res:"success",data:update_student});
+}
+
 
 
 module.exports = {
@@ -286,5 +345,9 @@ module.exports = {
   getStudentDetails,
   getQuiz,
   getAllQuizzes,
-  getSubjects
+  getSubjects,
+  submitQuiz,
+  getResources,
+  getAttendedQuizzes,
+  updateDetails
 };
