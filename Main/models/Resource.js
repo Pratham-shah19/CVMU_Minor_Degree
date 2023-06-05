@@ -4,7 +4,6 @@ const ResourceSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide name"],
-    unique:true
   },
   college:{
     type:String,
@@ -23,7 +22,8 @@ const ResourceSchema = new mongoose.Schema({
     enum:["Announcement","Material","Result"]
   },
   link:{
-    type:String
+    type:String,
+    default:""
   }
 
 });

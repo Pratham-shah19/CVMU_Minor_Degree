@@ -7,6 +7,7 @@ const Subject = require("../models/Subject");
 const Faculty = require("../models/Faculty");
 const Quiz = require("../models/Quiz");
 const Question = require("../models/Question");
+const Resource = require("../models/Resource");
 
 const forgotPasswordFaculty = async (req, res) => {
   const { email } = req.body;
@@ -197,6 +198,16 @@ const deleteQuestion = async(req,res)=>{
   res.status(StatusCodes.OK).json({res:"success",data:update_quiz});
 }
 
+const createNotification = async(req,res)=>{
+  const {userId} = req.user;
+  const faculty  = await Faculty.findOne({_id:userId});
+  req.body.college = faculty.college;
+  req.body.subject = faculty.subject;
+  const resource = await Resource.create(req.body);
+  res.status(StatusCodes.OK).json({res:"success",data:resource});
+
+}
+
 module.exports = {
   forgotPasswordFaculty,
   loginFaculty,
@@ -207,5 +218,6 @@ module.exports = {
   getQuiz,
   createQuestion,
   updateQuiz,
-  deleteQuestion
+  deleteQuestion,
+  createNotification
 };

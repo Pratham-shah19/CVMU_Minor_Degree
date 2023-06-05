@@ -36,12 +36,12 @@ router.route("/choicefilling").post(authMiddleware,choiceFill);//req.body = {[su
 
 //profile
 router.route("/details").get(authMiddleware,getStudentDetails);//students details
-router.route("/details").patch(authMiddleware,updateDetails);
+router.route("/details").patch(authMiddleware,updateDetails);//update student details [req.body = details]
 
 //quiz
 router.route("/quiz").get(authMiddleware,getAllQuizzes);//only those quizzes that are not expired
 router.route("/quiz/attended").get(authMiddleware,getAttendedQuizzes);//only those quizzes that are attended by the student
-router.route("/quiz/submit").post(authMiddleware,submitQuiz);//req.body = {questions:[array]}
+router.route("/quiz/submit").post(authMiddleware,submitQuiz);//req.body = {questions:[array]} *untested
 
 //material,result,announcements
 router.route("/notifications").get(authMiddleware,getResources);//?type=Announcement,Result,Material
