@@ -31,6 +31,6 @@ router.route("/quiz/question").post(authMiddleware,createQuestion);//then add qu
 router.route("/quiz/question").delete(authMiddleware,deleteQuestion);//req.body={questionId,quizId}
 
 //material,result,announcement
-// router.route("/notification").post(authMiddleware,createNotification)
+router.route("/notification").post(authMiddleware,createNotification)
 
 module.exports = router;

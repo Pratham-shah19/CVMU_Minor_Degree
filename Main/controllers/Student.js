@@ -310,7 +310,7 @@ const submitQuiz = async(req,res)=>{
 const getResources = async(req,res)=>{
   const {userId} = req.user;
   const student = await Student.findOne({_id:userId});
-  const {type} = req.params;
+  const {type} = req.query;
   const notifications = await Resource.find({college:student.college,subject:student.subject,semester:student.semester,type}).select(["name","link"]);
   res.status(StatusCodes.OK).json({res:"success",data:notifications})
 }
