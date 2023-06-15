@@ -216,22 +216,30 @@ const getStudentDetails = async(req,res)=>{
   if(!student){
     throw new BadRequestError("NO students exists with this id");
   }
-  const subject = await Subject.findOne({college:student.college,name:student.subject});
-  for(let i=0;i<subject.courses.length;i++){
-    if(subject.courses[i].semester == student.semester)
-    {
-      var course  = await Course.findOne({_id:subject.courses[i].courseId});
-      break;
+  if(student.subject){
+    const subject = await Subject.findOne({college:student.college,name:student.subject});
+    for(let i=0;i<subject.courses.length;i++){
+      if(subject.courses[i].semester == student.semester)
+      {
+        var course  = await Course.findOne({_id:subject.courses[i].courseId});
+        break;
+      }
     }
+    res.status(StatusCodes.OK).json({res:"success",data:student,course});
+
   }
-  res.status(StatusCodes.OK).json({res:"success",data:student,course});
+  else{
+    res.status(StatusCodes.OK).json({res:"success",data:student});
+  }
 }
 const getAllQuizzes = async(req,res)=>{
   const {userId} = req.user;
   const student = await Student.findOne({_id:userId});
+  var attended_quiz = await quizResult.find({studentId:userId});
   var quiz = await Quiz.find({subject:student.subject,college:student.college,semester:student.semester,isExpired:false});
   let result = [];
   for(let i =0;i<quiz.length;i++){
+    
     let question_array = [];
     let obj = {};
     obj.name = quiz[i].name;
