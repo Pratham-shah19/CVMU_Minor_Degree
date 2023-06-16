@@ -294,7 +294,7 @@ const submitQuiz = async(req,res)=>{
   {
     const obj = {}
     obj.questionId = questions[i]._id;
-    obj.response= Number(questions[i].studentResponse);
+    obj.response= Number(questions[i].studentChoice);
     if(questions[i].correctOption[0] == obj.response){
       marks += questions[i].marks;
     }
