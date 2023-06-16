@@ -286,6 +286,7 @@ const getQuiz = async(req,res)=>{
 }
 const submitQuiz = async(req,res)=>{
   const {questions} = req.body;
+  console.log(req.body);
   const {userId} = req.user;
   var result_object = {}
   var marks = 0;
