@@ -235,11 +235,13 @@ const getStudentDetails = async(req,res)=>{
 const getAllQuizzes = async(req,res)=>{
   const {userId} = req.user;
   const student = await Student.findOne({_id:userId});
-  var attended_quiz = await quizResult.find({studentId:userId});
+  var attended_quiz = await quizResult.find({studentId:userId}).select('quizId');
   var quiz = await Quiz.find({subject:student.subject,college:student.college,semester:student.semester,isExpired:false});
   let result = [];
   for(let i =0;i<quiz.length;i++){
-    
+    if(attended_quiz.find((o) => o.quizId == `${quiz[i]._id}`)){
+      continue;
+    }
     let question_array = [];
     let obj = {};
     obj.name = quiz[i].name;

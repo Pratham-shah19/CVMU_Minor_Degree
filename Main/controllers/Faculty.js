@@ -191,7 +191,7 @@ const deleteQuestion = async(req,res)=>{
   for(let i=0;i<questions.length;i++)
   {
     if(questions[i] == questionId){
-      questions.pop(i);
+      questions.splice(i,1);
     }
   }
   const update_quiz = await Quiz.findOneAndUpdate({_id:delete_question.quizId},{questions:questions,totalMarks:quiz.totalMarks-delete_question.marks},{new:true});
