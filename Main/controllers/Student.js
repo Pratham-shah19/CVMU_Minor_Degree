@@ -255,7 +255,7 @@ const getAllQuizzes = async(req,res)=>{
       question_object._id = question._id;
       question_object.quizId = question.quizId;
       question_object.marks = question.marks;
-      question_object.studentChoice = "";
+      question_object.studentChoice = "-1";
       question_object.imgUrl = question.imgUrl;
       question_array.push(question_object);
     }
