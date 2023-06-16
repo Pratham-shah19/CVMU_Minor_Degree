@@ -247,6 +247,7 @@ const getAllQuizzes = async(req,res)=>{
     obj.totalMarks = quiz[i].totalMarks;
     for(let j=0;j<quiz[i].questions.length;j++){
       let question = await Question.findOne({_id:quiz[i].questions[j]});
+      if(!question) console.log(quiz[i].questions[j])
       let question_object = {}
       question_object.question = question.question;
       question_object.options = question.options;
@@ -333,7 +334,7 @@ const getAttendedQuizzes = async(req,res)=>{
 const updateDetails = async(req,res)=>{
   const {userId} = req.user;
   const update_student = await Student.findOneAndUpdate({_id:userId},req.body,{new:true,runValidators:true});
-  if(!update){
+  if(!update_student){
     throw new BadRequestError("please provide all the correct details");
   }
   res.status(StatusCodes.OK).json({res:"success",data:update_student});
