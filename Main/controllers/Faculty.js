@@ -194,7 +194,7 @@ const deleteQuestion = async(req,res)=>{
       questions.pop(i);
     }
   }
-  const update_quiz = await Quiz.findOneAndUpdate({_id:delete_question.quizId},{questions},{new:true});
+  const update_quiz = await Quiz.findOneAndUpdate({_id:delete_question.quizId},{questions,totalMarks:quiz.totalMarks-delete_question.marks},{new:true});
   res.status(StatusCodes.OK).json({res:"success",data:update_quiz});
 }
 
