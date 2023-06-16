@@ -40,6 +40,7 @@ app.use("/api/v1/faculty", facultyRouter);
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
+const Question = require("./models/Question");
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
